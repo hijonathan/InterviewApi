@@ -1,5 +1,7 @@
 package com.interview.api.utils;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,15 +17,24 @@ import com.interview.api.enums.Category;
 
 public class DbUtils {
 	
-	public static DataSource createDataSource(final String host, final String dbname, final String username, final String password) {
-		BasicDataSource pool = new BasicDataSource();
-		pool.setUrl("jdbc:mysql://" + host + ":3306/" + dbname + "?autoReconnect=true&zeroDateTimeBehavior=convertToNull");
-		pool.setDriverClassName("com.mysql.jdbc.Driver");
-		pool.setUsername(username);
-		pool.setPassword(password);
-		pool.setValidationQuery("select 1");
-		
-		return pool;
+	public static DataSource createDataSource() {
+		URI dbUri;
+		try {
+			dbUri = new URI(System.getenv("CLEARDB_DATABASE_URL"));
+		} catch (URISyntaxException e) {
+			return null;
+		}
+
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        String dbUrl = "jdbc:mysql://" + dbUri.getHost() + dbUri.getPath();
+
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl(dbUrl);
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
+
+        return basicDataSource;
 	}
 	
 	public static List<String> selectQuestions(final DataSource dataSource, final Category category) throws SQLException {
