@@ -21,6 +21,7 @@ import org.codehaus.jackson.JsonGenerator;
 
 import com.google.inject.Inject;
 import com.interview.api.enums.Category;
+import com.interview.api.enums.QuestionType;
 import com.interview.api.utils.DbUtils;
 
 @Path("/questions")
@@ -35,6 +36,10 @@ public class QuestionsResource {
 	public String getQuestions(@PathParam("category") String category) throws SQLException, IOException {
 		List<String> questions = DbUtils.selectQuestions(dataSource, Category.fromShortName(category));
 		
+		return writeQuestionsToJson(questions);
+	}
+	
+	private String writeQuestionsToJson(final List<String> questions) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
 		generator.writeStartArray();
@@ -47,10 +52,36 @@ public class QuestionsResource {
 		return baos.toString();
 	}
 	
-	@POST
-	@Path("/{category}")
-	@Consumes("application/x-www-form-urlencoded")
-	public void addQuestion(@PathParam("category") String category, @FormParam("question") String question) {
+	@GET
+	@Path("/all")
+	public String getAllQuestions() throws SQLException, IOException {
+		List<String> questions = DbUtils.selectAllQuestions(dataSource);
 		
+		return writeQuestionsToJson(questions);
+	}
+	
+	@GET
+	@Path("/categories")
+	public String getAllCategories() throws IOException {
+		Category[] categories = Category.values();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
+		generator.writeStartArray();
+		for (Category c : categories) {
+			generator.writeString(c.getDisplayName());
+		}
+
+		generator.writeEndArray();
+		generator.close();
+		
+		return baos.toString();
+	}
+	
+	@POST
+	@Path("/{category}/{type}")
+	@Consumes("application/x-www-form-urlencoded")
+	public void addQuestion(@PathParam("category") String category, @PathParam("type") String type, @FormParam("question") String question) throws SQLException {
+		
+		DbUtils.addQuestion(dataSource, question, Category.fromShortName(category), QuestionType.fromShortName(type));
 	}
 }
