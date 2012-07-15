@@ -1,1 +1,14 @@
-target/
+*.class
+*~
+target
+.project
+.classpath
+.settings
+bin
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+.DS_Store
