@@ -12,7 +12,7 @@ public class InterviewModule extends JerseyServletModule {
 	@Override
 	protected void configureServlets() {
 		bind(QuestionsResource.class);
-		bind(DataSource.class).toInstance(DbUtils.createDataSource("localhost", "interview", "root", ""));
+		bind(DataSource.class).toInstance(DbUtils.createDataSource());
 		serve("/*").with(GuiceContainer.class);
 	}
 }
