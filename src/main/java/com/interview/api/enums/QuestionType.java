@@ -6,27 +6,27 @@ import java.util.Map;
 
 public enum QuestionType {
 
-	GENERAL("general", 0, 2),
-	COMPANY("company", 1, 1),
-	BACKGROUND("background", 1, 2),
-	PERSONAL("personal", 1, 1),
-	TECHNICAL("technical", 2, 3);
+	GENERAL("general", 0, 1),
+	COMPANY("company", 1, 2),
+	BACKGROUND("background", 2, 1),
+	PERSONAL("personal", 3, 1),
+	TECHNICAL("technical", 4, 3);
 	
 	private String shortName;
 	private int priority;
-	private int num;
+	private int number;
 	private QuestionType(final String shortName, final Integer priority, final Integer number) {
 		this.shortName = shortName;
 		this.priority = priority;
-		this.num = number;
+		this.number = number;
 	}
 	
 	public String getShortName() {
 		return shortName;
 	}
 	
-	public Integer getNum() {
-		return num;
+	public Integer getNumber() {
+		return number;
 	}
 	
 	public Integer getPriority() {
