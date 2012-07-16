@@ -56,6 +56,12 @@ public class DbUtils {
         basicDataSource.setUrl(dbUrl);
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
+        basicDataSource.setMaxActive(10);
+        basicDataSource.setInitialSize(2);
+        basicDataSource.setMaxIdle(1);
+        basicDataSource.setValidationQuery("select 1");
+        basicDataSource.setTestOnBorrow(true);
+        basicDataSource.setMaxWait(60 * 1000);
 
         return basicDataSource;
 	}
@@ -65,6 +71,14 @@ public class DbUtils {
 		
 		Collection<QuestionsForType> result = queryRunner.query("SELECT question, question_type FROM questions where category in(?, ?)", resultSetHandler, Category.ALL.getShortName(), category.getShortName());
 		List<String> questions = new ArrayList<String>();
+		List<QuestionsForType> sorted = new ArrayList<QuestionsForType>(result);
+		Collections.sort(sorted, new Comparator<QuestionsForType>() {
+
+			public int compare(QuestionsForType arg0, QuestionsForType arg1) {
+				return arg0.getPriority() - arg1.getPriority();
+			}
+			
+		});
 		for (QuestionsForType t : result) {
 			questions.addAll(t.getRandomQuestions());
 		}
@@ -75,18 +89,8 @@ public class DbUtils {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
 		Collection<QuestionsForType> result = queryRunner.query("SELECT question, question_type FROM questions", resultSetHandler);
-		
-		List<QuestionsForType> sorted = new ArrayList<QuestionsForType>(result);
-		Collections.sort(sorted, new Comparator<QuestionsForType>() {
-
-			public int compare(QuestionsForType arg0, QuestionsForType arg1) {
-				return arg0.getPriority() - arg1.getPriority();
-			}
-			
-		});
-		
 		List<String> questions = new ArrayList<String>();
-		for (QuestionsForType t : sorted) {
+		for (QuestionsForType t : result) {
 			questions.addAll(t.getAllQuestions());
 		}
 		return questions;
