@@ -3,6 +3,9 @@ package com.interview.api.resources;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -34,7 +37,19 @@ public class QuestionsResource {
 	@GET
 	@Path("/{category}")
 	public String getQuestions(@PathParam("category") String category) throws SQLException, IOException {
-		List<String> questions = DbUtils.selectQuestions(dataSource, Category.fromShortName(category));
+		List<QuestionsForType> result = DbUtils.selectQuestions(dataSource, Category.fromShortName(category));
+		
+		List<String> questions = new ArrayList<String>();
+		Collections.sort(result, new Comparator<QuestionsForType>() {
+
+			public int compare(QuestionsForType arg0, QuestionsForType arg1) {
+				return arg0.getPriority() - arg1.getPriority();
+			}
+			
+		});
+		for (QuestionsForType t : result) {
+			questions.addAll(t.getRandomQuestions());
+		}
 		
 		return writeQuestionsToJson(questions);
 	}
@@ -55,8 +70,11 @@ public class QuestionsResource {
 	@GET
 	@Path("/all")
 	public String getAllQuestions() throws SQLException, IOException {
-		List<String> questions = DbUtils.selectAllQuestions(dataSource);
-		
+		List<QuestionsForType> result = DbUtils.selectAllQuestions(dataSource);
+		List<String> questions = new ArrayList<String>();
+		for (QuestionsForType t : result) {
+			questions.addAll(t.getAllQuestions());
+		}
 		return writeQuestionsToJson(questions);
 	}
 	

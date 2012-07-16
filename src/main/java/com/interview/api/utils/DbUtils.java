@@ -66,34 +66,20 @@ public class DbUtils {
         return basicDataSource;
 	}
 	
-	public static List<String> selectQuestions(final DataSource dataSource, final Category category) throws SQLException {
+	public static List<QuestionsForType> selectQuestions(final DataSource dataSource, final Category category) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
 		Collection<QuestionsForType> result = queryRunner.query("SELECT question, question_type FROM questions where category in(?, ?)", resultSetHandler, Category.ALL.getShortName(), category.getShortName());
-		List<String> questions = new ArrayList<String>();
-		List<QuestionsForType> sorted = new ArrayList<QuestionsForType>(result);
-		Collections.sort(sorted, new Comparator<QuestionsForType>() {
-
-			public int compare(QuestionsForType arg0, QuestionsForType arg1) {
-				return arg0.getPriority() - arg1.getPriority();
-			}
-			
-		});
-		for (QuestionsForType t : result) {
-			questions.addAll(t.getRandomQuestions());
-		}
-		return questions;
+		
+		return new ArrayList<QuestionsForType>(result);
 	}
 	
-	public static List<String> selectAllQuestions(final DataSource dataSource) throws SQLException {
+	public static List<QuestionsForType> selectAllQuestions(final DataSource dataSource) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
 		Collection<QuestionsForType> result = queryRunner.query("SELECT question, question_type FROM questions", resultSetHandler);
-		List<String> questions = new ArrayList<String>();
-		for (QuestionsForType t : result) {
-			questions.addAll(t.getAllQuestions());
-		}
-		return questions;
+		
+		return new ArrayList<QuestionsForType>(result);
 	}
 	
 	public static void addQuestion(final DataSource dataSource, final String question, final Category category, final QuestionType questionType) throws SQLException {
