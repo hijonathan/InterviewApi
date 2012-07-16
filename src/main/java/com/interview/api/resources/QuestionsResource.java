@@ -68,7 +68,10 @@ public class QuestionsResource {
 		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
 		generator.writeStartArray();
 		for (Category c : categories) {
-			generator.writeString(c.getDisplayName());
+			generator.writeStartObject();
+			generator.writeStringField("displayName", c.getDisplayName());
+			generator.writeStringField("shortName", c.getShortName());
+			generator.writeEndObject();
 		}
 
 		generator.writeEndArray();
