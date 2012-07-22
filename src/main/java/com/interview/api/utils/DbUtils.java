@@ -5,9 +5,6 @@ import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,19 +21,18 @@ import com.interview.api.resources.QuestionsForType;
 
 public class DbUtils {
 	
-	private static ResultSetHandler<Collection<QuestionsForType>> resultSetHandler = new ResultSetHandler<Collection<QuestionsForType>>() {
-	    public Collection<QuestionsForType> handle(ResultSet rs) throws SQLException {
-	        Map<QuestionType, QuestionsForType> map = new HashMap<QuestionType, QuestionsForType>();
+	private static ResultSetHandler<List<Question>> questionsHandler = new ResultSetHandler<List<Question>>() {
+	    public List<Question> handle(ResultSet rs) throws SQLException {
+	        List<Question> list = new ArrayList<Question>();
 	        while(rs.next()) {
+	        	int id = rs.getInt("id");
 	        	String question = rs.getString("question");
 	        	QuestionType type = QuestionType.fromShortName(rs.getString("question_type"));
-	        	if (!map.containsKey(type)) {
-	        		map.put(type, new QuestionsForType(type));
-	        	}
-	        	map.get(type).add(question);
+	        	Category category = Category.fromShortName(rs.getString("category"));
+	        	list.add(new Question(id, question, category, type));
 	        }
 
-	        return map.values();
+	        return list;
 	    }
 	};
 	
@@ -69,17 +65,30 @@ public class DbUtils {
 	public static List<QuestionsForType> selectQuestions(final DataSource dataSource, final Category category) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
-		Collection<QuestionsForType> result = queryRunner.query("SELECT question, question_type FROM questions where category in(?, ?)", resultSetHandler, Category.ALL.getShortName(), category.getShortName());
-		
-		return new ArrayList<QuestionsForType>(result);
+		List<Question> result = queryRunner.query("SELECT id, question, category, question_type FROM questions where category in(?, ?)", questionsHandler, Category.ALL.getShortName(), category.getShortName());
+		Map<QuestionType, QuestionsForType> map = new HashMap<QuestionType, QuestionsForType>();
+        for (Question  question : result) {
+        	QuestionType type = question.getQuestionType();
+        	if (!map.containsKey(type)) {
+        		map.put(type, new QuestionsForType(type));
+        	}
+        	map.get(type).add(question);
+        }
+		return new ArrayList<QuestionsForType>(map.values());
 	}
 	
-	public static List<QuestionsForType> selectAllQuestions(final DataSource dataSource) throws SQLException {
+	public static Map<Category, List<Question>> selectAllQuestions(final DataSource dataSource) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
-		Collection<QuestionsForType> result = queryRunner.query("SELECT question, question_type FROM questions", resultSetHandler);
-		
-		return new ArrayList<QuestionsForType>(result);
+		List<Question> result = queryRunner.query("SELECT id, question, category, question_type FROM questions", questionsHandler);
+		Map<Category, List<Question>> questionsByCategory = new HashMap<Category, List<Question>>();
+		for (Question question : result) {
+			if (!questionsByCategory.containsKey(question.getCategory())) {
+				questionsByCategory.put(question.getCategory(), new ArrayList<Question>());
+			}
+			questionsByCategory.get(question.getCategory()).add(question);
+		}
+		return questionsByCategory;
 	}
 	
 	public static void addQuestion(final DataSource dataSource, final String question, final Category category, final QuestionType questionType) throws SQLException {

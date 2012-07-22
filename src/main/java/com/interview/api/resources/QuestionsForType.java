@@ -8,26 +8,27 @@ import java.util.Set;
 import org.apache.commons.lang.math.RandomUtils;
 
 import com.interview.api.enums.QuestionType;
+import com.interview.api.utils.Question;
 
 public class QuestionsForType {
 
 	private final QuestionType type;
-	private final List<String> questions;
+	private final List<Question> questions;
 	
 	public QuestionsForType(final QuestionType type) {
 		this.type = type;
-		this.questions = new ArrayList<String>();
+		this.questions = new ArrayList<Question>();
 	}
 	
-	public void add(final String question) {
+	public void add(final Question question) {
 		questions.add(question);
 	}
 	
-	public List<String> getRandomQuestions() {
+	public List<Question> getRandomQuestions() {
 		int numberOfQuestions = type.getNumber();
 		int size = questions.size();
 		Set<Integer> indices = new HashSet<Integer>(numberOfQuestions);
-		List<String> randomQuestions = new ArrayList<String>(numberOfQuestions);
+		List<Question> randomQuestions = new ArrayList<Question>(numberOfQuestions);
 		while (randomQuestions.size() < numberOfQuestions) {
 			int index = RandomUtils.nextInt(size);
 			while (indices.contains(index)) {
@@ -43,7 +44,7 @@ public class QuestionsForType {
 		return type.getPriority();
 	}
 	
-	public List<String> getAllQuestions() {
+	public List<Question> getAllQuestions() {
 		return questions;
 	}
 }
