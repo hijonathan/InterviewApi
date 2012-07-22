@@ -77,23 +77,34 @@ public class DbUtils {
 		return new ArrayList<QuestionsForType>(map.values());
 	}
 	
-	public static Map<Category, List<Question>> selectAllQuestions(final DataSource dataSource) throws SQLException {
+	public static List<Question> selectAllQuestions(final DataSource dataSource) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		
 		List<Question> result = queryRunner.query("SELECT id, question, category, question_type FROM questions", questionsHandler);
-		Map<Category, List<Question>> questionsByCategory = new HashMap<Category, List<Question>>();
-		for (Question question : result) {
-			if (!questionsByCategory.containsKey(question.getCategory())) {
-				questionsByCategory.put(question.getCategory(), new ArrayList<Question>());
-			}
-			questionsByCategory.get(question.getCategory()).add(question);
-		}
-		return questionsByCategory;
+		return result;
 	}
 	
 	public static void addQuestion(final DataSource dataSource, final String question, final Category category, final QuestionType questionType) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		
 		queryRunner.update("INSERT INTO questions(question, category, question_type) VALUES(?,?,?)", question, category.getShortName(), questionType.getShortName());
+	}
+
+	public static void deleteQuestion(final DataSource dataSource, final Integer id) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		queryRunner.update("DELETE FROM questions WHERE id = ?", id);
+	}
+	
+	public static void editQuestion(final DataSource dataSource, final Integer id, final String question) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		queryRunner.update("UPDATE questions SET question = ? WHERE id = ?", question, id);
+	}
+	
+	public static void editQuestion(final DataSource dataSource, final Integer id, final Category category) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		queryRunner.update("UPDATE questions SET category = ? WHERE id = ?", category.getShortName(), id);
+	}
+	
+	public static void editQuestion(final DataSource dataSource, final Integer id, final QuestionType questionType) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		queryRunner.update("UPDATE question SET questionType = ? WHERE id = ?", questionType.getShortName(), id);
 	}
 }

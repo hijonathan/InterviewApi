@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -78,16 +78,11 @@ public class QuestionsResource {
 	@GET
 	@Path("/all")
 	public String getAllQuestions() throws SQLException, IOException {
-		Map<Category, List<Question>> questionsByCategory = DbUtils.selectAllQuestions(dataSource);
+		List<Question> questions = DbUtils.selectAllQuestions(dataSource);
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
-		generator.writeStartObject();
-		for (Entry<Category, List<Question>> entry : questionsByCategory.entrySet()) {
-			generator.writeFieldName(entry.getKey().getShortName());
-			writeQuestionsToJson(entry.getValue(), generator);
-		}
-		generator.writeEndObject();
+		writeQuestionsToJson(questions, generator);
 		generator.close();
 		return baos.toString();
 	}
@@ -111,12 +106,36 @@ public class QuestionsResource {
 		
 		return baos.toString();
 	}
+
+	@DELETE
+	@Path("/{id}/delete")
+	@Consumes("application/x-www-form-urlencoded")
+	public String deleteQuestion(@PathParam("id") Integer id) throws SQLException {
+		DbUtils.deleteQuestion(dataSource, id);
+		return "success";
+	}
+
+	@POST
+	@Path("/{id}/edit")
+	@Consumes("application/x-www-form-urlencoded")
+	public String editQuestion(@PathParam("id") Integer id, @QueryParam("question") String question, @QueryParam("category") String category, @QueryParam("questionType") String questionType) throws SQLException {
+		if (question != null) {
+			DbUtils.editQuestion(dataSource, id, question);
+		}
+		if (category != null) {
+			DbUtils.editQuestion(dataSource, id, Category.fromShortName(category));
+		}
+		if (questionType != null) {
+			DbUtils.editQuestion(dataSource, id, QuestionType.fromShortName(questionType));
+		}
+		return "success";
+	}
 	
 	@POST
 	@Path("/{category}/{type}")
 	@Consumes("application/x-www-form-urlencoded")
-	public void addQuestion(@PathParam("category") String category, @PathParam("type") String type, @FormParam("question") String question) throws SQLException {
-		
+	public String addQuestion(@PathParam("category") String category, @PathParam("type") String type, @FormParam("question") String question) throws SQLException {
 		DbUtils.addQuestion(dataSource, question, Category.fromShortName(category), QuestionType.fromShortName(type));
+		return "success";
 	}
 }
