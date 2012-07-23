@@ -7,7 +7,8 @@ public enum Category {
 
 	ALL("All", "all"),
 	MARKETING("Marketing", "marketing"),
-	SOFTWARE_DEVELOPER("Software Developer", "software_developer");
+	SOFTWARE_DEVELOPER("Software Developer", "software_developer"),
+	FINANCE("Finance", "finance");
 	
 	private String displayName;
 	private String shortName;

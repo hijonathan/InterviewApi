@@ -106,6 +106,27 @@ public class QuestionsResource {
 		
 		return baos.toString();
 	}
+	
+	@GET
+	@Path("/question-types")
+	public String getAllQuestionTypes() throws IOException {
+		QuestionType[] types = QuestionType.values();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
+		generator.writeStartArray();
+		for (QuestionType t : types) {
+			generator.writeStartObject();
+			generator.writeStringField("shortName", t.getShortName());
+			generator.writeNumberField("priority", t.getPriority());
+			generator.writeNumberField("number", t.getNumber());
+			generator.writeEndObject();
+		}
+
+		generator.writeEndArray();
+		generator.close();
+		
+		return baos.toString();
+	}
 
 	@DELETE
 	@Path("/{id}/delete")
