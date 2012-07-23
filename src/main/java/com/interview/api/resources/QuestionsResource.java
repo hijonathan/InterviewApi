@@ -17,7 +17,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -139,7 +138,7 @@ public class QuestionsResource {
 	@POST
 	@Path("/{id}/edit")
 	@Consumes("application/x-www-form-urlencoded")
-	public String editQuestion(@PathParam("id") Integer id, @QueryParam("question") String question, @QueryParam("category") String category, @QueryParam("questionType") String questionType) throws SQLException {
+	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("category") String category, @FormParam("questionType") String questionType) throws SQLException {
 		if (question != null) {
 			DbUtils.editQuestion(dataSource, id, question);
 		}

@@ -95,16 +95,19 @@ public class DbUtils {
 	
 	public static void editQuestion(final DataSource dataSource, final Integer id, final String question) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		queryRunner.update("UPDATE questions SET question = ? WHERE id = ?", question, id);
+		int numRows = queryRunner.update("UPDATE questions SET question = ? WHERE id = ?", question, id);
+		System.out.println("updated " + numRows + " rows");
 	}
 	
 	public static void editQuestion(final DataSource dataSource, final Integer id, final Category category) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		queryRunner.update("UPDATE questions SET category = ? WHERE id = ?", category.getShortName(), id);
+		int numRows = queryRunner.update("UPDATE questions SET category = ? WHERE id = ?", category.getShortName(), id);
+		System.out.println("updated " + numRows + " rows");
 	}
 	
 	public static void editQuestion(final DataSource dataSource, final Integer id, final QuestionType questionType) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		queryRunner.update("UPDATE question SET questionType = ? WHERE id = ?", questionType.getShortName(), id);
+		int numRows = queryRunner.update("UPDATE question SET questionType = ? WHERE id = ?", questionType.getShortName(), id);
+		System.out.println("updated " + numRows + " rows");
 	}
 }
