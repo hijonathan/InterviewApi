@@ -108,13 +108,13 @@ public class DbUtils {
 	
 	public static void editQuestion(final DataSource dataSource, final Integer id, final QuestionType questionType) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		int numRows = queryRunner.update("UPDATE question SET questionType = ? WHERE id = ?", questionType.getShortName(), id);
+		int numRows = queryRunner.update("UPDATE questions SET questionType = ? WHERE id = ?", questionType.getShortName(), id);
 		System.out.println("updated " + numRows + " rows");
 	}
 
 	public static void addAudio(final DataSource dataSource, final Integer id, final String audio) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		int numRows = queryRunner.update("UPDATE question SET audio = ? WHERE id = ?", audio, id);
+		int numRows = queryRunner.update("UPDATE questions SET audio = ? WHERE id = ?", audio, id);
 		System.out.println("updated " + numRows + " rows");
 	}
 }
