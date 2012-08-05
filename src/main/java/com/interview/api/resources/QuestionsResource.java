@@ -69,6 +69,7 @@ public class QuestionsResource {
 			generator.writeStringField("question", question.getQuestion());
 			generator.writeStringField("position", question.getPosition().getShortName());
 			generator.writeStringField("questionType", question.getQuestionType().getShortName());
+			generator.writeStringField("audio", question.getAudio());
 			generator.writeEndObject();
 		}
 		generator.writeEndArray();
