@@ -89,6 +89,12 @@ public class DbUtils {
 		queryRunner.update("INSERT INTO questions(question, position, question_type) VALUES(?,?,?)", question, position.getShortName(), questionType.getShortName());
 	}
 
+	public static Question getQuestion(final DataSource dataSource, final Integer id) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio FROM questions where id = ?", questionsHandler, id);
+		return result.get(0);
+	}
+	
 	public static void deleteQuestion(final DataSource dataSource, final Integer id) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		queryRunner.update("DELETE FROM questions WHERE id = ?", id);

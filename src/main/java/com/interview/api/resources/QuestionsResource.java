@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 
 import com.google.inject.Inject;
@@ -64,15 +65,19 @@ public class QuestionsResource {
 	private void writeQuestionsToJson(final List<Question> questions, final JsonGenerator generator) throws IOException {
 		generator.writeStartArray();
 		for (Question question : questions) {
-			generator.writeStartObject();
-			generator.writeNumberField("id", question.getId());
-			generator.writeStringField("question", question.getQuestion());
-			generator.writeStringField("position", question.getPosition().getShortName());
-			generator.writeStringField("questionType", question.getQuestionType().getShortName());
-			generator.writeStringField("audio", question.getAudio());
-			generator.writeEndObject();
+			writeQuestion(question, generator);
 		}
 		generator.writeEndArray();
+	}
+	
+	private void writeQuestion(final Question question, final JsonGenerator generator) throws JsonGenerationException, IOException {
+		generator.writeStartObject();
+		generator.writeNumberField("id", question.getId());
+		generator.writeStringField("question", question.getQuestion());
+		generator.writeStringField("position", question.getPosition().getShortName());
+		generator.writeStringField("questionType", question.getQuestionType().getShortName());
+		generator.writeStringField("audio", question.getAudio());
+		generator.writeEndObject();
 	}
 	
 	@GET
@@ -125,6 +130,18 @@ public class QuestionsResource {
 		generator.writeEndArray();
 		generator.close();
 		
+		return baos.toString();
+	}
+	
+	@GET
+	@Path("/{id}")
+	public String getQuestion(@PathParam("id") Integer id) throws SQLException, JsonGenerationException, IOException {
+		Question question= DbUtils.getQuestion(dataSource, id);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
+		writeQuestion(question, generator);
+		generator.close();
 		return baos.toString();
 	}
 
