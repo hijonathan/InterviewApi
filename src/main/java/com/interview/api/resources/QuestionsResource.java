@@ -134,8 +134,8 @@ public class QuestionsResource {
 	}
 	
 	@GET
-	@Path("/{id}")
-	public String getQuestion(@PathParam("id") Integer id) throws SQLException, JsonGenerationException, IOException {
+	@Path("/{id}/get")
+	public String getQuestion(@PathParam("id") Integer id) throws SQLException, IOException {
 		Question question= DbUtils.getQuestion(dataSource, id);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
