@@ -15,7 +15,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 
-import com.interview.api.enums.Category;
+import com.interview.api.enums.Position;
 import com.interview.api.enums.QuestionType;
 import com.interview.api.resources.QuestionsForType;
 
@@ -28,8 +28,9 @@ public class DbUtils {
 	        	int id = rs.getInt("id");
 	        	String question = rs.getString("question");
 	        	QuestionType type = QuestionType.fromShortName(rs.getString("question_type"));
-	        	Category category = Category.fromShortName(rs.getString("category"));
-	        	list.add(new Question(id, question, category, type));
+	        	Position position = Position.fromShortName(rs.getString("position"));
+	        	String audio = rs.getString("audio");
+	        	list.add(new Question(id, question, position, type, audio));
 	        }
 
 	        return list;
@@ -62,10 +63,10 @@ public class DbUtils {
         return basicDataSource;
 	}
 	
-	public static List<QuestionsForType> selectQuestions(final DataSource dataSource, final Category category) throws SQLException {
+	public static List<QuestionsForType> selectQuestions(final DataSource dataSource, final Position position) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
-		List<Question> result = queryRunner.query("SELECT id, question, category, question_type FROM questions where category in(?, ?)", questionsHandler, Category.ALL.getShortName(), category.getShortName());
+		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio FROM questions where position in(?, ?)", questionsHandler, Position.ALL.getShortName(), position.getShortName());
 		Map<QuestionType, QuestionsForType> map = new HashMap<QuestionType, QuestionsForType>();
         for (Question  question : result) {
         	QuestionType type = question.getQuestionType();
@@ -79,13 +80,13 @@ public class DbUtils {
 	
 	public static List<Question> selectAllQuestions(final DataSource dataSource) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		List<Question> result = queryRunner.query("SELECT id, question, category, question_type FROM questions", questionsHandler);
+		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio FROM questions", questionsHandler);
 		return result;
 	}
 	
-	public static void addQuestion(final DataSource dataSource, final String question, final Category category, final QuestionType questionType) throws SQLException {
+	public static void addQuestion(final DataSource dataSource, final String question, final Position position, final QuestionType questionType) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		queryRunner.update("INSERT INTO questions(question, category, question_type) VALUES(?,?,?)", question, category.getShortName(), questionType.getShortName());
+		queryRunner.update("INSERT INTO questions(question, position, question_type) VALUES(?,?,?)", question, position.getShortName(), questionType.getShortName());
 	}
 
 	public static void deleteQuestion(final DataSource dataSource, final Integer id) throws SQLException {
@@ -99,15 +100,21 @@ public class DbUtils {
 		System.out.println("updated " + numRows + " rows");
 	}
 	
-	public static void editQuestion(final DataSource dataSource, final Integer id, final Category category) throws SQLException {
+	public static void editQuestion(final DataSource dataSource, final Integer id, final Position position) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		int numRows = queryRunner.update("UPDATE questions SET category = ? WHERE id = ?", category.getShortName(), id);
+		int numRows = queryRunner.update("UPDATE questions SET position = ? WHERE id = ?", position.getShortName(), id);
 		System.out.println("updated " + numRows + " rows");
 	}
 	
 	public static void editQuestion(final DataSource dataSource, final Integer id, final QuestionType questionType) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		int numRows = queryRunner.update("UPDATE question SET questionType = ? WHERE id = ?", questionType.getShortName(), id);
+		System.out.println("updated " + numRows + " rows");
+	}
+
+	public static void addAudio(final DataSource dataSource, final Integer id, final String audio) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		int numRows = queryRunner.update("UPDATE question SET audio = ? WHERE id = ?", audio, id);
 		System.out.println("updated " + numRows + " rows");
 	}
 }

@@ -24,7 +24,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 
 import com.google.inject.Inject;
-import com.interview.api.enums.Category;
+import com.interview.api.enums.Position;
 import com.interview.api.enums.QuestionType;
 import com.interview.api.utils.DbUtils;
 import com.interview.api.utils.Question;
@@ -37,9 +37,9 @@ public class QuestionsResource {
 	private DataSource dataSource;
 	
 	@GET
-	@Path("/{category}")
-	public String getQuestions(@PathParam("category") String category) throws SQLException, IOException {
-		List<QuestionsForType> result = DbUtils.selectQuestions(dataSource, Category.fromShortName(category));
+	@Path("/{position}")
+	public String getQuestions(@PathParam("position") String position) throws SQLException, IOException {
+		List<QuestionsForType> result = DbUtils.selectQuestions(dataSource, Position.fromShortName(position));
 		
 		List<Question> questions = new ArrayList<Question>();
 		Collections.sort(result, new Comparator<QuestionsForType>() {
@@ -67,7 +67,7 @@ public class QuestionsResource {
 			generator.writeStartObject();
 			generator.writeNumberField("id", question.getId());
 			generator.writeStringField("question", question.getQuestion());
-			generator.writeStringField("category", question.getCategory().getShortName());
+			generator.writeStringField("position", question.getPosition().getShortName());
 			generator.writeStringField("questionType", question.getQuestionType().getShortName());
 			generator.writeEndObject();
 		}
@@ -87,16 +87,16 @@ public class QuestionsResource {
 	}
 	
 	@GET
-	@Path("/categories")
-	public String getAllCategories() throws IOException {
-		Category[] categories = Category.values();
+	@Path("/positions")
+	public String getAllPositions() throws IOException {
+		Position[] positions = Position.values();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		JsonGenerator generator = new JsonFactory().createJsonGenerator(baos, JsonEncoding.UTF8);
 		generator.writeStartArray();
-		for (Category c : categories) {
+		for (Position p : positions) {
 			generator.writeStartObject();
-			generator.writeStringField("displayName", c.getDisplayName());
-			generator.writeStringField("shortName", c.getShortName());
+			generator.writeStringField("displayName", p.getDisplayName());
+			generator.writeStringField("shortName", p.getShortName());
 			generator.writeEndObject();
 		}
 
@@ -138,24 +138,27 @@ public class QuestionsResource {
 	@POST
 	@Path("/{id}/edit")
 	@Consumes("application/x-www-form-urlencoded")
-	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("category") String category, @FormParam("questionType") String questionType) throws SQLException {
+	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("position") String position, @FormParam("questionType") String questionType, @FormParam("audio") String audio) throws SQLException {
 		if (question != null) {
 			DbUtils.editQuestion(dataSource, id, question);
 		}
-		if (category != null) {
-			DbUtils.editQuestion(dataSource, id, Category.fromShortName(category));
+		if (position != null) {
+			DbUtils.editQuestion(dataSource, id, Position.fromShortName(position));
 		}
 		if (questionType != null) {
 			DbUtils.editQuestion(dataSource, id, QuestionType.fromShortName(questionType));
+		}
+		if (audio != null) {
+			DbUtils.addAudio(dataSource, id, audio);
 		}
 		return "success";
 	}
 	
 	@POST
-	@Path("/{category}/{type}")
+	@Path("/{position}/{type}")
 	@Consumes("application/x-www-form-urlencoded")
-	public String addQuestion(@PathParam("category") String category, @PathParam("type") String type, @FormParam("question") String question) throws SQLException {
-		DbUtils.addQuestion(dataSource, question, Category.fromShortName(category), QuestionType.fromShortName(type));
+	public String addQuestion(@PathParam("position") String position, @PathParam("type") String type, @FormParam("question") String question) throws SQLException {
+		DbUtils.addQuestion(dataSource, question, Position.fromShortName(position), QuestionType.fromShortName(type));
 		return "success";
 	}
 }
