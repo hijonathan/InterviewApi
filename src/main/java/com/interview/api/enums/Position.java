@@ -5,17 +5,19 @@ import java.util.Map;
 
 public enum Position {
 
-	ALL("All", "all"),
-	MARKETER("Marketer", "marketer"),
-	SOFTWARE_DEVELOPER("Software Developer", "software_developer"),
-	FINANCIAL_ANALYST("Financial Analyst", "financial_analyst"),
-	CONSULTANT("Consultant", "consultant");
+	ALL("All", "all", "w"),
+	MARKETER("Marketer", "marketer", "W"),
+	SOFTWARE_DEVELOPER("Software Developer", "software_developer", "Q"),
+	FINANCIAL_ANALYST("Financial Analyst", "financial_analyst", "%"),
+	CONSULTANT("Consultant", "consultant", "O");
 	
 	private String displayName;
 	private String shortName;
-	private Position(final String displayName, final String shortName) {
+	private String icon;
+	private Position(final String displayName, final String shortName, final String icon) {
 		this.displayName = displayName;
 		this.shortName = shortName;
+		this.icon = icon;
 	}
 	
 	public String getDisplayName() {
@@ -24,6 +26,10 @@ public enum Position {
 	
 	public String getShortName() {
 		return shortName;
+	}
+	
+	public String getIcon() {
+		return icon;
 	}
 
 	private static final Map<String, Position> BY_SHORT_NAME;
