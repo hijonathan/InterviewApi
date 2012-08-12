@@ -27,11 +27,14 @@ import org.codehaus.jackson.JsonGenerator;
 import com.google.inject.Inject;
 import com.interview.api.enums.Position;
 import com.interview.api.enums.QuestionType;
+import com.interview.api.filters.AuthFilter;
 import com.interview.api.utils.DbUtils;
 import com.interview.api.utils.Question;
+import com.sun.jersey.spi.container.ResourceFilters;
 
 @Path("/questions")
 @Produces({MediaType.APPLICATION_JSON})
+@ResourceFilters(AuthFilter.class)
 public class QuestionsResource {
 
 	@Inject
