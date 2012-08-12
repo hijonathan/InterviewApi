@@ -5,12 +5,11 @@ import java.util.Map;
 
 
 public enum QuestionType {
-
-	GENERAL("general", 0, 1),
-	COMPANY("company", 1, 2),
-	BACKGROUND("background", 2, 1),
-	PERSONAL("personal", 3, 1),
-	TECHNICAL("technical", 4, 3);
+	
+	COMPANY("company", 0, 2),
+	BACKGROUND("background", 1, 1),
+	PERSONAL("personal", 2, 1),
+	TECHNICAL("technical", 3, 3);
 	
 	private String shortName;
 	private int priority;
