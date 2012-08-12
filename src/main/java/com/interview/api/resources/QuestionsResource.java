@@ -106,6 +106,7 @@ public class QuestionsResource {
 			generator.writeStartObject();
 			generator.writeStringField("displayName", p.getDisplayName());
 			generator.writeStringField("shortName", p.getShortName());
+			generator.writeStringField("icon", p.getIcon());
 			generator.writeEndObject();
 		}
 
