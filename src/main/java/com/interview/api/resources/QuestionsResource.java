@@ -165,7 +165,7 @@ public class QuestionsResource {
 	@POST
 	@Path("/{id}/edit")
 	@Consumes("application/x-www-form-urlencoded")
-	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("position") String position, @FormParam("questionType") String questionType, @FormParam("audio") String audio, @FormParam("active") Boolean active, @FormParam("followUp") String followUp) throws SQLException {
+	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("position") String position, @FormParam("questionType") String questionType, @FormParam("active") Boolean active, @FormParam("followUp") String followUp) throws SQLException {
 		if (question != null) {
 			DbUtils.editQuestion(dataSource, id, question);
 		}
@@ -175,15 +175,23 @@ public class QuestionsResource {
 		if (questionType != null) {
 			DbUtils.editQuestion(dataSource, id, QuestionType.fromShortName(questionType));
 		}
-		if (audio != null) {
-			DbUtils.addAudio(dataSource, id, audio);
-		}
 		if (active != null) {
 			DbUtils.editQuestion(dataSource, id, active);
 		}
 		if (followUp != null) {
 			DbUtils.addFollowUp(dataSource, id, followUp);
 		}
+		return "success";
+	}
+	
+	@POST
+	@Path("/{id}/save-audio")
+	public String saveAudio(@PathParam("id") Integer id, @FormParam("audio") String audio, @FormParam("isFollowUp") Boolean isFollowUp) throws SQLException {
+
+		if (audio != null) {
+			DbUtils.addAudio(dataSource, id, audio, isFollowUp);
+		}
+		
 		return "success";
 	}
 	

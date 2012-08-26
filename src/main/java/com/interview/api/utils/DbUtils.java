@@ -128,9 +128,13 @@ public class DbUtils {
 		System.out.println("updated " + numRows + " rows");
 	}
 
-	public static void addAudio(final DataSource dataSource, final Integer id, final String audio) throws SQLException {
+	public static void addAudio(final DataSource dataSource, final Integer id, final String audio, final Boolean isFollowUp) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		int numRows = queryRunner.update("UPDATE questions SET audio = ? WHERE id = ?", audio, id);
+		String query = "UPDATE questions SET audio = ? WHERE id = ?";
+		if (isFollowUp) {
+			query = "UPDATE questions SET follow_up_audio = ? WHERE id = ?";
+		}
+		int numRows = queryRunner.update(query, audio, id);
 		System.out.println("updated " + numRows + " rows");
 	}
 
