@@ -7,20 +7,36 @@ import com.interview.api.enums.QuestionType;
 
 public class Question {
 
+	public static class TextAndAudio {
+		private final String text;
+		private final String audio;
+		
+		public TextAndAudio(final String text, final String audio) {
+			this.text = text;
+			this.audio = audio;
+		}
+		
+		public String getText() {
+			return text;
+		}
+		
+		public String getAudio() {
+			return audio;
+		}
+	}
+	
 	private final int id;
-	private final String question;
+	private final TextAndAudio question;
 	private final Position position;
 	private final QuestionType questionType;
-	private final String audio;
 	private final Boolean isActive;
-	private final String followUp;
+	private final TextAndAudio followUp;
 	
-	public Question(final int id, final String question, final Position position, final QuestionType questionType, final String audio, final Boolean isActive, final String followUp) {
+	public Question(final int id, final TextAndAudio question, final Position position, final QuestionType questionType, final Boolean isActive, final TextAndAudio followUp) {
 		this.id = id;
 		this.question = question;
 		this.position = position;
 		this.questionType = questionType;
-		this.audio = audio;
 		this.isActive = isActive;
 		this.followUp = followUp;
 	}
@@ -29,7 +45,7 @@ public class Question {
 		return id;
 	}
 	
-	public String getQuestion() {
+	public TextAndAudio getQuestion() {
 		return question;
 	}
 	
@@ -41,16 +57,12 @@ public class Question {
 		return questionType;
 	}
 	
-	public String getAudio() {
-		return audio;
-	}
-	
-	public String getFollowUp() {
+	public TextAndAudio getFollowUp() {
 		return followUp;
 	}
 	
 	public Boolean hasFollowUp() {
-		return !StringUtils.isEmpty(followUp);
+		return !StringUtils.isEmpty(followUp.getText());
 	}
 	
 	public Boolean isActive() {

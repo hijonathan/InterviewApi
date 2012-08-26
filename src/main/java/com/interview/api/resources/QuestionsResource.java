@@ -76,13 +76,14 @@ public class QuestionsResource {
 	private void writeQuestion(final Question question, final JsonGenerator generator) throws JsonGenerationException, IOException {
 		generator.writeStartObject();
 		generator.writeNumberField("id", question.getId());
-		generator.writeStringField("question", question.getQuestion());
+		generator.writeStringField("question", question.getQuestion().getText());
 		generator.writeStringField("position", question.getPosition().getShortName());
 		generator.writeStringField("questionType", question.getQuestionType().getShortName());
-		generator.writeStringField("audio", question.getAudio());
+		generator.writeStringField("audio", question.getQuestion().getAudio());
 		generator.writeBooleanField("active", question.isActive());
 		if (question.hasFollowUp()) {
-			generator.writeStringField("followUp", question.getFollowUp());
+			generator.writeStringField("followUp", question.getFollowUp().getText());
+			generator.writeStringField("followUpAudio", question.getFollowUp().getAudio());
 		}
 		generator.writeEndObject();
 	}

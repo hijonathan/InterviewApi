@@ -18,6 +18,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import com.interview.api.enums.Position;
 import com.interview.api.enums.QuestionType;
 import com.interview.api.resources.QuestionsForType;
+import com.interview.api.utils.Question.TextAndAudio;
 
 public class DbUtils {
 	
@@ -32,7 +33,8 @@ public class DbUtils {
 	        	String audio = rs.getString("audio");
 	        	Boolean isActive = rs.getBoolean("active");
 	        	String followUp = rs.getString("follow_up");
-	        	list.add(new Question(id, question, position, type, audio, isActive, followUp));
+	        	String followUpAudio = rs.getString("follow_up_audio");
+	        	list.add(new Question(id, new TextAndAudio(question, audio), position, type, isActive, new TextAndAudio(followUp, followUpAudio)));
 	        }
 
 	        return list;
@@ -68,7 +70,7 @@ public class DbUtils {
 	public static List<QuestionsForType> selectQuestions(final DataSource dataSource, final Position position) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
-		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio, active, follow_up FROM questions where position in(?, ?) and active=1", questionsHandler, Position.ALL.getShortName(), position.getShortName());
+		List<Question> result = queryRunner.query("SELECT * FROM questions where position in(?, ?) and active=1", questionsHandler, Position.ALL.getShortName(), position.getShortName());
 		Map<QuestionType, QuestionsForType> map = new HashMap<QuestionType, QuestionsForType>();
         for (Question  question : result) {
         	QuestionType type = question.getQuestionType();
@@ -82,7 +84,7 @@ public class DbUtils {
 	
 	public static List<Question> selectAllQuestions(final DataSource dataSource) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio, active, follow_up FROM questions", questionsHandler);
+		List<Question> result = queryRunner.query("SELECT * FROM questions", questionsHandler);
 		return result;
 	}
 	
@@ -93,7 +95,7 @@ public class DbUtils {
 
 	public static Question getQuestion(final DataSource dataSource, final Integer id) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio, active, follow_up FROM questions where id = ?", questionsHandler, id);
+		List<Question> result = queryRunner.query("SELECT * FROM questions where id = ?", questionsHandler, id);
 		return result.get(0);
 	}
 	
