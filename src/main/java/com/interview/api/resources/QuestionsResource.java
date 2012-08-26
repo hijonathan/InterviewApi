@@ -80,6 +80,7 @@ public class QuestionsResource {
 		generator.writeStringField("position", question.getPosition().getShortName());
 		generator.writeStringField("questionType", question.getQuestionType().getShortName());
 		generator.writeStringField("audio", question.getAudio());
+		generator.writeBooleanField("active", question.isActive());
 		if (question.hasFollowUp()) {
 			generator.writeStringField("followUp", question.getFollowUp());
 		}

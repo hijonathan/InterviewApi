@@ -54,6 +54,6 @@ public class Question {
 	}
 	
 	public Boolean isActive() {
-		return isActive;
+		return isActive == null ? false : isActive;
 	}
 }
