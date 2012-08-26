@@ -80,6 +80,9 @@ public class QuestionsResource {
 		generator.writeStringField("position", question.getPosition().getShortName());
 		generator.writeStringField("questionType", question.getQuestionType().getShortName());
 		generator.writeStringField("audio", question.getAudio());
+		if (question.hasFollowUp()) {
+			generator.writeStringField("followUp", question.getFollowUp());
+		}
 		generator.writeEndObject();
 	}
 	
@@ -160,7 +163,7 @@ public class QuestionsResource {
 	@POST
 	@Path("/{id}/edit")
 	@Consumes("application/x-www-form-urlencoded")
-	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("position") String position, @FormParam("questionType") String questionType, @FormParam("audio") String audio) throws SQLException {
+	public String editQuestion(@PathParam("id") Integer id, @FormParam("question") String question, @FormParam("position") String position, @FormParam("questionType") String questionType, @FormParam("audio") String audio, @FormParam("active") Boolean active, @FormParam("followUp") String followUp) throws SQLException {
 		if (question != null) {
 			DbUtils.editQuestion(dataSource, id, question);
 		}
@@ -172,6 +175,12 @@ public class QuestionsResource {
 		}
 		if (audio != null) {
 			DbUtils.addAudio(dataSource, id, audio);
+		}
+		if (active != null) {
+			DbUtils.editQuestion(dataSource, id, active);
+		}
+		if (followUp != null) {
+			DbUtils.addFollowUp(dataSource, id, followUp);
 		}
 		return "success";
 	}

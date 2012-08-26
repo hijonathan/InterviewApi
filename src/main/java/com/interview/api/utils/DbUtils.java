@@ -30,7 +30,9 @@ public class DbUtils {
 	        	QuestionType type = QuestionType.fromShortName(rs.getString("question_type"));
 	        	Position position = Position.fromShortName(rs.getString("position"));
 	        	String audio = rs.getString("audio");
-	        	list.add(new Question(id, question, position, type, audio));
+	        	Boolean isActive = rs.getBoolean("active");
+	        	String followUp = rs.getString("follow_up");
+	        	list.add(new Question(id, question, position, type, audio, isActive, followUp));
 	        }
 
 	        return list;
@@ -66,7 +68,7 @@ public class DbUtils {
 	public static List<QuestionsForType> selectQuestions(final DataSource dataSource, final Position position) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		
-		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio FROM questions where position in(?, ?)", questionsHandler, Position.ALL.getShortName(), position.getShortName());
+		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio, active, follow_up FROM questions where position in(?, ?) and active=1", questionsHandler, Position.ALL.getShortName(), position.getShortName());
 		Map<QuestionType, QuestionsForType> map = new HashMap<QuestionType, QuestionsForType>();
         for (Question  question : result) {
         	QuestionType type = question.getQuestionType();
@@ -80,7 +82,7 @@ public class DbUtils {
 	
 	public static List<Question> selectAllQuestions(final DataSource dataSource) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio FROM questions", questionsHandler);
+		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio, active, follow_up FROM questions", questionsHandler);
 		return result;
 	}
 	
@@ -91,7 +93,7 @@ public class DbUtils {
 
 	public static Question getQuestion(final DataSource dataSource, final Integer id) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
-		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio FROM questions where id = ?", questionsHandler, id);
+		List<Question> result = queryRunner.query("SELECT id, question, position, question_type, audio, active, follow_up FROM questions where id = ?", questionsHandler, id);
 		return result.get(0);
 	}
 	
@@ -117,10 +119,22 @@ public class DbUtils {
 		int numRows = queryRunner.update("UPDATE questions SET question_type = ? WHERE id = ?", questionType.getShortName(), id);
 		System.out.println("updated " + numRows + " rows");
 	}
+	
+	public static void editQuestion(final DataSource dataSource, final Integer id, final Boolean active) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		int numRows = queryRunner.update("UPDATE questions SET active = ? WHERE id = ?", active, id);
+		System.out.println("updated " + numRows + " rows");
+	}
 
 	public static void addAudio(final DataSource dataSource, final Integer id, final String audio) throws SQLException {
 		QueryRunner queryRunner = new QueryRunner(dataSource);
 		int numRows = queryRunner.update("UPDATE questions SET audio = ? WHERE id = ?", audio, id);
+		System.out.println("updated " + numRows + " rows");
+	}
+
+	public static void addFollowUp(final DataSource dataSource, final Integer id, final String followUp) throws SQLException {
+		QueryRunner queryRunner = new QueryRunner(dataSource);
+		int numRows = queryRunner.update("UPDATE questions SET follow_up = ? WHERE id = ?", followUp, id);
 		System.out.println("updated " + numRows + " rows");
 	}
 }
